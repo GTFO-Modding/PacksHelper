@@ -33,7 +33,7 @@
 		<Reference Remove="$(InteropLibsFolder)/mscorlib.dll" />
 
 		<!-- Plugins -->
-		<Reference Include="$(PluginsFolder)\GTFO-API.dll" Private="false" />
-		<Reference Include="$(PluginsFolder)\Localia-LocaliaCore\LocaliaCore.dll" Private="false" />
+		<!-- <Reference Include="$(PluginsFolder)\GTFO-API.dll" Private="false" /> -->
+		<!-- <Reference Include="$(PluginsFolder)\Localia-LocaliaCore\LocaliaCore.dll" Private="false" /> -->
 	</ItemGroup>
 </Project>

@@ -30,8 +30,8 @@
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="Patch_Build.cs" />
-    <Compile Include="Patch_HUD.cs" />
+    <Compile Include="Patch_Main.cs" />
+    <Compile Include="Patch_Others.cs" />
     <None Include="Dependencies.props" />
   </ItemGroup>
 </Project>

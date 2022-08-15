@@ -17,15 +17,50 @@ namespace PacksHelper
         public static bool canCheckTar = false;
         public static bool canCheckInter = false;
         public static float forceUpateHUDTIme = 0.0f; 
-        public static int last_slot = -1; 
-        public static int last_action = -1; 
+        public static int pack_type = 0; 
+        public static int last_pack_type = 0; 
         public static string[] health = new string[4];
         public static string[] standard = new string[4];
         public static string[] special = new string[4];
         public static string[] tool = new string[4];
         public static string[] ori_all_info = new string[4];
         public static string[] now_show_info = new string[4];
+     
 
+
+        public static void checkPackType(string name)
+        {
+            if(name == "AmmoPackWeaponFirstPerson(Clone)")
+            {
+                pack_type = 1;
+            }
+            else if(name == "MediPackFirstPerson(Clone)" || name == "DisinfectonPackFirstPerson(Clone)")
+            {
+                pack_type = 2;
+            }
+            else if(name == "AmmoPackToolFirstPerson(Clone)")
+            {
+                pack_type = 3;
+            }
+            else
+            {
+                pack_type = 0;
+            }
+            
+            // Logs.Info(string.Format("==={0} {1}",item.name,state));
+
+            if(pack_type > 0)
+            {
+                PH_Manager.showAll();
+            }
+
+            if(pack_type > 0 || (last_pack_type > 0 && pack_type != last_pack_type ))
+            {
+                PH_Manager.forceUpdateHUDAll();
+            }
+            last_pack_type = pack_type;
+
+        }
         public static void showAll()
         {
             Il2CppSystem.Collections.Generic.List<PlayerAgent> playerAgentsInLevel = PlayerManager.PlayerAgentsInLevel;
@@ -33,7 +68,7 @@ namespace PacksHelper
             {
                 if (playerAgentsInLevel[i] != null && !playerAgentsInLevel[i].IsLocallyOwned)
                 {
-                    if(Patch_onChangeGear.state > 0 && !playerAgentsInLevel[i].NavMarker.ExtraInfoVisible)
+                    if(pack_type > 0 && !playerAgentsInLevel[i].NavMarker.ExtraInfoVisible)
                     {
                         playerAgentsInLevel[i].NavMarker.SetExtraInfoVisible(true);
                     }
@@ -61,15 +96,15 @@ namespace PacksHelper
         public static string get_ext_changed(PlaceNavMarkerOnGO marker,int slot)
         {   
            
-            if(Patch_onChangeGear.state == 1)
+            if(pack_type == 1)
             {
                 now_show_info[slot] = "<color=#CCCCCCFF><size=140%>" + standard[slot] + "\n" + special[slot] + "</size></color>";
             }
-            else if(Patch_onChangeGear.state == 2)
+            else if(pack_type == 2)
             {
                 now_show_info[slot] = "<color=#CCCCCCFF><size=140%>" + health[slot] +  "</size></color>";
             }
-            else if(Patch_onChangeGear.state == 3)
+            else if(pack_type == 3)
             {
                 now_show_info[slot] = "<color=#CCCCCCFF><size=140%>" + tool[slot] +  "</size></color>";
             }
@@ -133,8 +168,36 @@ namespace PacksHelper
 
     internal static class patch_ResourcePackFirstPersonUpdate
     {
-        // [HarmonyBefore(new string[] { "net.example.plugin2" })]
+        [HarmonyPatch(nameof(ResourcePackFirstPerson.UpdateInteraction))]
+        [HarmonyPrefix]
+        [HarmonyPriority((Priority.VeryLow))] 
+        [HarmonyWrapSafe]
+        public static void UpdateInteraction_pre(ResourcePackFirstPerson __instance)
+        {   
+            bool isActive = __instance.m_interactApplyResource.TimerIsActive;
+            
+            if(!isActive)
+            {
+                __instance.m_lastActionReceiver = null;
+                PH_Manager.canCheckTar = true;
+            }
+        }
+
         
+        [HarmonyPatch(nameof(ResourcePackFirstPerson.UpdateInteraction))]
+        [HarmonyPostfix]
+        [HarmonyWrapSafe]
+        public static void UpdateInteraction_post(ResourcePackFirstPerson __instance)
+        {   
+            PH_Manager.canCheckTar = false;
+            PH_Manager.canCheckInter = false;
+            if(Clock.Time > PH_Manager.forceUpateHUDTIme)
+            {
+                PH_Manager.forceUpdateHUDAll();
+            }
+        }
+
+        // [HarmonyBefore(new string[] { "net.example.plugin2" })]
         [HarmonyPatch(nameof(ResourcePackFirstPerson.UpdateInteractionActionName))]
         [HarmonyPrefix]
         [HarmonyWrapSafe]
@@ -182,8 +245,6 @@ namespace PacksHelper
             }
 
             
-        
-            // Logs.Info($"= DO CHANGE ={now_slot}");
             __instance.m_interactApplyResource.m_input = InputAction.Use;
             if (__instance.m_actionReceiver.IsLocallyOwned)
             {
@@ -215,34 +276,7 @@ namespace PacksHelper
         }
 
 
-        [HarmonyPatch(nameof(ResourcePackFirstPerson.UpdateInteraction))]
-        [HarmonyPrefix]
-        [HarmonyPriority((Priority.VeryLow))] 
-        [HarmonyWrapSafe]
-        public static void UpdateInteraction_pre(ResourcePackFirstPerson __instance)
-        {   
-            bool isActive = __instance.m_interactApplyResource.TimerIsActive;
-            
-            if(!isActive)
-            {
-                __instance.m_lastActionReceiver = null;
-                PH_Manager.canCheckTar = true;
-            }
-        }
-
-        
-        [HarmonyPatch(nameof(ResourcePackFirstPerson.UpdateInteraction))]
-        [HarmonyPostfix]
-        [HarmonyWrapSafe]
-        public static void UpdateInteraction_post(ResourcePackFirstPerson __instance)
-        {   
-            PH_Manager.canCheckTar = false;
-            PH_Manager.canCheckInter = false;
-            if(Clock.Time > PH_Manager.forceUpateHUDTIme)
-            {
-                PH_Manager.forceUpdateHUDAll();
-            }
-        }
+       
     }
 
 

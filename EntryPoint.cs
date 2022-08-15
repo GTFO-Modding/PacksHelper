@@ -6,9 +6,6 @@ namespace PacksHelper
 {
 	[BepInPlugin("Localia.PacksHelper", "PacksHelper", "1.5.0")]
 
-
-
-
 	public class EntryPoint : BasePlugin
 	{
 		private Harmony m_Harmony;
