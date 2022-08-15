@@ -1,18 +1,17 @@
-﻿<Project>
-	
+﻿<Project InitialTargets="ValidateGamePath">
+    <Import Project="$(MSBuildThisFileDirectory)\GameFolder.props" Condition="Exists('$(MSBuildThisFileDirectory)\GameFolder.props')" />
+
+    <Target Name="ValidateGamePath">
+        <Error Text="The GameFolder property must be set to the GTFO game folder." Condition="'$(GameFolder)' == '' or !Exists('$(GameFolder)')" />
+    </Target>
+
 	<PropertyGroup>
-		<!-- <GameFolder>C:\Users\Qdream\AppData\Roaming\r2modmanPlus-local\GTFO\profiles\Default</GameFolder> -->
-		<GameFolder>C:\Users\64117\AppData\Roaming\r2modmanPlus-local\GTFO\profiles\Default</GameFolder>
 		<BIELibsFolder>$(GameFolder)\BepInEx\core</BIELibsFolder>
 		<CorLibsFolder>$(GameFolder)\dotnet</CorLibsFolder>
 		<InteropLibsFolder>$(GameFolder)\BepInEx\interop</InteropLibsFolder>
 		<PluginsFolder>$(GameFolder)\BepInEx\plugins</PluginsFolder>
 	</PropertyGroup>
 
-	<!-- NuGet Packages -->
-	<!-- <ItemGroup>
-		<PackageReference Include="VersionInfoGenerator" Version="2.0.0" PrivateAssets="all" />
-	</ItemGroup> -->
 
 	<!-- Assemblies -->
 	<ItemGroup>
@@ -34,6 +33,7 @@
 		<Reference Remove="$(InteropLibsFolder)/mscorlib.dll" />
 
 		<!-- Plugins -->
-		<!-- <Reference Include="$(PluginsFolder)\GTFO-API.dll" Private="false" /> -->
+		<Reference Include="$(PluginsFolder)\GTFO-API.dll" Private="false" />
+		<Reference Include="$(PluginsFolder)\Localia-LocaliaCore\LocaliaCore.dll" Private="false" />
 	</ItemGroup>
 </Project>
