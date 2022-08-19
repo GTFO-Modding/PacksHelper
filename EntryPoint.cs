@@ -1,10 +1,10 @@
 ﻿using BepInEx;
-using BepInEx.IL2CPP;
+using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 
 namespace PacksHelper
 {
-	[BepInPlugin("Localia.PacksHelper", "PacksHelper", "1.5.0")]
+	[BepInPlugin("Localia.PacksHelper", "PacksHelper", "3.0.0")]
 
 	public class EntryPoint : BasePlugin
 	{
